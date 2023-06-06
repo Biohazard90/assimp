@@ -1604,16 +1604,14 @@ void FBXConverter::ConvertCluster(std::vector<aiBone*> &local_mesh_bones, const 
         bone = new aiBone();
         bone->mName = bone_name;
 
-        bone->mOffsetMatrix = cluster->Transform();
+        //bone->mOffsetMatrix = cluster->Transform();
         // store local transform link for post processing
-        /*
         bone->mOffsetMatrix = cluster->TransformLink();
-        bone->mOffsetMatrix.Inverse();
+        //bone->mOffsetMatrix.Inverse();
 
-        aiMatrix4x4 matrix = (aiMatrix4x4)absolute_transform;
+        //aiMatrix4x4 matrix = (aiMatrix4x4)absolute_transform;
 
-        bone->mOffsetMatrix = bone->mOffsetMatrix * matrix; // * mesh_offset
-        */
+        //bone->mOffsetMatrix = bone->mOffsetMatrix * matrix; // * mesh_offset
         //
         // Now calculate the aiVertexWeights
         //
