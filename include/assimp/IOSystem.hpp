@@ -187,14 +187,14 @@ public:
      *  @param path Path to push onto the stack.
      *  @return True, when push was successful, false if path is empty.
      */
-    virtual bool PushDirectory( const std::string &path );
+    virtual bool PushDirectory( const char *path );
 
     // -------------------------------------------------------------------
     /** @brief Returns the top directory from the stack.
      *  @return The directory on the top of the stack.
      *          Returns empty when no directory was pushed to the stack.
      */
-    virtual const std::string &CurrentDirectory() const;
+    virtual const char *CurrentDirectory() const;
 
     // -------------------------------------------------------------------
     /** @brief Returns the number of directories stored on the stack.
@@ -215,22 +215,16 @@ public:
      *  @return True, when a directory was created. False if the directory
      *           cannot be created.
      */
-    virtual bool CreateDirectory( const std::string &path );
+    virtual bool CreateDirectory( const char *path );
 
     // -------------------------------------------------------------------
     /** @brief Will change the current directory to the given path.
      *  @param path     [in] The path to change to.
      *  @return True, when the directory has changed successfully.
      */
-    virtual bool ChangeDirectory( const std::string &path );
+    virtual bool ChangeDirectory( const char *path );
 
-    // -------------------------------------------------------------------
-    /**
-     *  @brief  Will delete the given file.
-     *  @param file     [in] The filename
-     *  @return true, if the file wase deleted, false if not.
-     */
-    virtual bool DeleteFile(const std::string &file);
+    virtual bool DeleteFile( const char *file );
 
 private:
     std::vector<std::string> m_pathStack;
@@ -273,8 +267,9 @@ AI_FORCE_INLINE bool IOSystem::ComparePaths(const std::string& one, const std::s
 }
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE bool IOSystem::PushDirectory( const std::string &path ) {
-    if ( path.empty() ) {
+AI_FORCE_INLINE
+bool IOSystem::PushDirectory( const char *path ) {
+    if ( path == nullptr || *path == 0 ) {
         return false;
     }
 
@@ -284,12 +279,24 @@ AI_FORCE_INLINE bool IOSystem::PushDirectory( const std::string &path ) {
 }
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE size_t IOSystem::StackSize() const {
+AI_FORCE_INLINE
+const char *IOSystem::CurrentDirectory() const {
+    if ( m_pathStack.empty() ) {
+        static const char *Dummy = "";
+        return Dummy;
+    }
+    return m_pathStack[ m_pathStack.size()-1 ].c_str();
+}
+
+// ----------------------------------------------------------------------------
+AI_FORCE_INLINE
+size_t IOSystem::StackSize() const {
     return m_pathStack.size();
 }
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE bool IOSystem::PopDirectory() {
+AI_FORCE_INLINE
+bool IOSystem::PopDirectory() {
     if ( m_pathStack.empty() ) {
         return false;
     }
@@ -300,26 +307,28 @@ AI_FORCE_INLINE bool IOSystem::PopDirectory() {
 }
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE bool IOSystem::CreateDirectory( const std::string &path ) {
-    if ( path.empty() ) {
+AI_FORCE_INLINE
+bool IOSystem::CreateDirectory( const char *path ) {
+    if ( path == nullptr || *path == 0 ) {
         return false;
     }
 
 #ifdef _WIN32
-    return 0 != ::_mkdir( path.c_str() );
+    return 0 != ::_mkdir( path );
 #else
     return 0 != ::mkdir( path.c_str(), 0777 );
 #endif // _WIN32
 }
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE bool IOSystem::ChangeDirectory( const std::string &path ) {
-    if ( path.empty() ) {
+AI_FORCE_INLINE
+bool IOSystem::ChangeDirectory( const char *path ) {
+    if ( path == nullptr || *path == 0 ) {
         return false;
     }
 
 #ifdef _WIN32
-    return 0 != ::_chdir( path.c_str() );
+    return 0 != ::_chdir( path );
 #else
     return 0 != ::chdir( path.c_str() );
 #endif // _WIN32
@@ -327,11 +336,12 @@ AI_FORCE_INLINE bool IOSystem::ChangeDirectory( const std::string &path ) {
 
 
 // ----------------------------------------------------------------------------
-AI_FORCE_INLINE bool IOSystem::DeleteFile( const std::string &file ) {
-    if ( file.empty() ) {
+AI_FORCE_INLINE
+bool IOSystem::DeleteFile( const char *file ) {
+    if ( file == nullptr ||*file == 0 ) {
         return false;
     }
-    const int retCode( ::remove( file.c_str() ) );
+    const int retCode( ::remove( file ) );
     return ( 0 == retCode );
 }
 } //!ns Assimp

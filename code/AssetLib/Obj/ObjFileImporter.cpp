@@ -130,7 +130,7 @@ void ObjFileImporter::InternReadFile(const std::string &file, aiScene *pScene, I
         modelName = file.substr(pos + 1, file.size() - pos - 1);
         folderName = file.substr(0, pos);
         if (!folderName.empty()) {
-            pIOHandler->PushDirectory(folderName);
+            pIOHandler->PushDirectory(folderName.c_str());
         }
     } else {
         modelName = file;

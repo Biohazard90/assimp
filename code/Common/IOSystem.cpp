@@ -43,11 +43,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assimp/IOSystem.hpp>
 
 using namespace Assimp;
-
-const std::string &IOSystem::CurrentDirectory() const {
-    if ( m_pathStack.empty() ) {
-        static const std::string Dummy = std::string();
-        return Dummy;
-    }
-    return m_pathStack[ m_pathStack.size()-1 ];
-}

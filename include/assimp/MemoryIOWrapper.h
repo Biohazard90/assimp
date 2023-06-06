@@ -190,15 +190,13 @@ public:
     bool ComparePaths(const char* one, const char* second) const override {
         return existing_io ? existing_io->ComparePaths(one, second) : false;
     }
-
-    /// @brief Will push the directory.
-    bool PushDirectory( const std::string &path ) override {
+    
+    bool PushDirectory( const char *path ) override { 
         return existing_io ? existing_io->PushDirectory(path) : false;
     }
 
-    /// @brief Will return the current directory from the stack top.
-    const std::string &CurrentDirectory() const override {
-        static std::string empty;
+    const char *CurrentDirectory() const override {
+        static const char *empty = "";
         return existing_io ? existing_io->CurrentDirectory() : empty;
     }
 
@@ -211,19 +209,16 @@ public:
     bool PopDirectory() override {
         return existing_io ? existing_io->PopDirectory() : false;
     }
-
-    /// @brief Will create the directory.
-    bool CreateDirectory( const std::string &path ) override {
+    
+    bool CreateDirectory( const char *path ) override {
         return existing_io ? existing_io->CreateDirectory(path) : false;
     }
 
-    /// @brief Will change the directory.
-    bool ChangeDirectory( const std::string &path ) override {
+    bool ChangeDirectory( const char *path ) override {
         return existing_io ? existing_io->ChangeDirectory(path) : false;
     }
 
-    /// @brief Will delete the file.
-    bool DeleteFile( const std::string &file ) override {
+    bool DeleteFile( const char *file ) override {
         return existing_io ? existing_io->DeleteFile(file) : false;
     }
 
