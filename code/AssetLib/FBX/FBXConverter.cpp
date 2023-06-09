@@ -2739,6 +2739,8 @@ void FBXConverter::ProcessMorphAnimDatas(std::map<std::string, morphAnimData *> 
                             auto model = dynamic_cast<const Model *>(geoConnection->DestinationObject());
                             if (model) {
                                 auto name = FixNodeName(geo->Name());
+                                if (name.empty())
+                                    name = FixNodeName(model->Name());
                                 morphAnimData *animData;
                                 auto animIt = morphAnimDatas->find(name.c_str());
                                 if (animIt == morphAnimDatas->end()) {
