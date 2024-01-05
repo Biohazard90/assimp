@@ -97,7 +97,7 @@ public:
      *  Create an instance of your derived class and assign it to an
      *  #Assimp::Importer instance by calling Importer::SetIOHandler().
      */
-    IOSystem() AI_NO_EXCEPT;
+    IOSystem() AI_NO_EXCEPT = default;
 
     // -------------------------------------------------------------------
     /** @brief Virtual destructor.
@@ -105,7 +105,7 @@ public:
      *  It is safe to be called from within DLL Assimp, we're constructed
      *  on Assimp's heap.
      */
-    virtual ~IOSystem();
+    virtual ~IOSystem() = default;
 
     // -------------------------------------------------------------------
     /** @brief For backward compatibility
