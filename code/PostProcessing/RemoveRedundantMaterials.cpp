@@ -135,7 +135,11 @@ void RemoveRedundantMatsProcess::Execute( aiScene* pScene) {
 
             // Check all previously mapped materials for a matching hash.
             // On a match we can delete this material and just make it ref to the same index.
-            uint32_t me = aiHashes[i] = ComputeMaterialHash(pScene->mMaterials[i]);
+            aiMaterial *mat = pScene->mMaterials[i];
+            const bool hasAnyTexture = mat->GetTextureCount(aiTextureType_DIFFUSE) ||
+                mat->GetTextureCount(aiTextureType_OPACITY) ||
+                mat->GetTextureCount(aiTextureType_BASE_COLOR);
+            uint32_t me = aiHashes[i] = ComputeMaterialHash(pScene->mMaterials[i], !hasAnyTexture);
             for (unsigned int a = 0; a < i;++a) {
                 if (abReferenced[a] && me == aiHashes[a]) {
                     ++redundantRemoved;

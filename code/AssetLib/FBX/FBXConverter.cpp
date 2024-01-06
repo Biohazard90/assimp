@@ -1606,6 +1606,8 @@ void FBXConverter::ConvertCluster(std::vector<aiBone*> &local_mesh_bones, const 
         aiNode *) {
     ai_assert(cluster != nullptr); // make sure cluster valid
 
+    absolute_transform;
+
     std::string deformer_name = cluster->TargetNode()->Name();
     aiString bone_name = aiString(FixNodeName(deformer_name));
 
