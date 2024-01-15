@@ -3224,6 +3224,7 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
     aiVector3D defTranslate = PropertyGet(props, "Lcl Translation", aiVector3D(0.f, 0.f, 0.f));
     aiVector3D defRotation = PropertyGet(props, "Lcl Rotation", aiVector3D(0.f, 0.f, 0.f));
     aiVector3D defScale = PropertyGet(props, "Lcl Scaling", aiVector3D(1.f, 1.f, 1.f));
+    aiQuaternion defQuat = EulerToQuaternion(defRotation, rotOrder);
 
     aiVectorKey* outTranslations = new aiVectorKey[keyCount];
     aiQuatKey* outRotations = new aiQuatKey[keyCount];
@@ -3239,9 +3240,8 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
     }
 
     if (keyframeLists[TransformationComp_Rotation].size() > 0) {
-        InterpolateKeys(outRotations, keytimes, keyframeLists[TransformationComp_Rotation], AI_DEG_TO_RAD(defRotation), maxTime, minTime, rotOrder);
+        InterpolateKeys(outRotations, keytimes, keyframeLists[TransformationComp_Rotation], defRotation, maxTime, minTime, rotOrder);
     } else {
-        aiQuaternion defQuat = EulerToQuaternion(AI_DEG_TO_RAD(defRotation), rotOrder);
         for (size_t i = 0; i < keyCount; ++i) {
             outRotations[i].mTime = CONVERT_FBX_TIME(keytimes[i]) * anim_fps;
             outRotations[i].mValue = defQuat;
@@ -3263,7 +3263,7 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
 
     const aiVector3D& preRotation = PropertyGet<aiVector3D>(props, "PreRotation", ok);
     if (ok && preRotation.SquareLength() > zero_epsilon) {
-        const aiQuaternion preQuat = EulerToQuaternion(AI_DEG_TO_RAD(preRotation), Model::RotOrder_EulerXYZ);
+        const aiQuaternion preQuat = EulerToQuaternion(preRotation, Model::RotOrder_EulerXYZ);
         for (size_t i = 0; i < keyCount; ++i) {
             outRotations[i].mValue = preQuat * outRotations[i].mValue;
         }
@@ -3271,7 +3271,7 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
 
     const aiVector3D& postRotation = PropertyGet<aiVector3D>(props, "PostRotation", ok);
     if (ok && postRotation.SquareLength() > zero_epsilon) {
-        const aiQuaternion postQuat = EulerToQuaternion(AI_DEG_TO_RAD(postRotation), Model::RotOrder_EulerXYZ);
+        const aiQuaternion postQuat = EulerToQuaternion(postRotation, Model::RotOrder_EulerXYZ);
         for (size_t i = 0; i < keyCount; ++i) {
             outRotations[i].mValue = outRotations[i].mValue * postQuat;
         }
