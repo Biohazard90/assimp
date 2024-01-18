@@ -257,7 +257,7 @@ void X3DImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
     pScene->mRootNode->mParent = nullptr;
     pScene->mFlags |= AI_SCENE_FLAGS_ALLOW_SHARED;
 
-    pIOHandler->PushDirectory(slashPos == std::string::npos ? std::string() : pFile.substr(0, slashPos + 1));
+    pIOHandler->PushDirectory(slashPos == std::string::npos ? "" : pFile.substr(0, slashPos + 1).c_str());
     ParseFile(pFile, pIOHandler);
     pIOHandler->PopDirectory();
 

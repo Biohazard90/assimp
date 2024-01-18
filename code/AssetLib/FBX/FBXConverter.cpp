@@ -1606,6 +1606,8 @@ void FBXConverter::ConvertCluster(std::vector<aiBone*> &local_mesh_bones, const 
         aiNode *) {
     ai_assert(cluster != nullptr); // make sure cluster valid
 
+    absolute_transform;
+
     std::string deformer_name = cluster->TargetNode()->Name();
     aiString bone_name = aiString(FixNodeName(deformer_name));
 
@@ -1621,14 +1623,12 @@ void FBXConverter::ConvertCluster(std::vector<aiBone*> &local_mesh_bones, const 
 
         //bone->mOffsetMatrix = cluster->Transform();
         // store local transform link for post processing
-        
         bone->mOffsetMatrix = cluster->TransformLink();
-        bone->mOffsetMatrix.Inverse();
+        //bone->mOffsetMatrix.Inverse();
 
-        const aiMatrix4x4 matrix = (aiMatrix4x4)absolute_transform;
+        //aiMatrix4x4 matrix = (aiMatrix4x4)absolute_transform;
 
-        bone->mOffsetMatrix = bone->mOffsetMatrix * matrix; // * mesh_offset
-        
+        //bone->mOffsetMatrix = bone->mOffsetMatrix * matrix; // * mesh_offset
         //
         // Now calculate the aiVertexWeights
         //
@@ -2557,13 +2557,14 @@ void FBXConverter::ConvertAnimations() {
 }
 
 std::string FBXConverter::FixNodeName(const std::string &name) {
-    // strip Model:: prefix, avoiding ambiguities (i.e. don't strip if
-    // this causes ambiguities, well possible between empty identifiers,
-    // such as "Model::" and ""). Make sure the behaviour is consistent
-    // across multiple calls to FixNodeName().
+    // strip Model:: and Geometry:: prefix, avoiding ambiguities (i.e.
+    // don't strip if this causes ambiguities, well possible between empty
+    // identifiers, such as "Model::" and ""). Make sure the behaviour is
+    // consistent across multiple calls to FixNodeName().
     if (name.substr(0, 7) == "Model::") {
-        std::string temp = name.substr(7);
-        return temp;
+        return name.substr(7);
+    } else if (name.substr(0, 10) == "Geometry::") {
+        return name.substr(10);
     }
 
     return name;
@@ -2754,15 +2755,14 @@ void FBXConverter::ProcessMorphAnimDatas(std::map<std::string, morphAnimData *> 
                         for (const Connection *geoConnection : geoConnections) {
                             auto model = dynamic_cast<const Model *>(geoConnection->DestinationObject());
                             if (model) {
-                                auto geoIt = std::find(model->GetGeometry().begin(), model->GetGeometry().end(), geo);
-                                auto geoIndex = static_cast<unsigned int>(std::distance(model->GetGeometry().begin(), geoIt));
-                                auto name = aiString(FixNodeName(model->Name() + "*"));
-                                name.length = 1 + ASSIMP_itoa10(name.data + name.length, MAXLEN - 1, geoIndex);
+                                auto name = FixNodeName(geo->Name());
+                                if (name.empty())
+                                    name = FixNodeName(model->Name());
                                 morphAnimData *animData;
-                                auto animIt = morphAnimDatas->find(name.C_Str());
+                                auto animIt = morphAnimDatas->find(name.c_str());
                                 if (animIt == morphAnimDatas->end()) {
                                     animData = new morphAnimData();
-                                    morphAnimDatas->insert(std::make_pair(name.C_Str(), animData));
+                                    morphAnimDatas->insert(std::make_pair(name.c_str(), animData));
                                 } else {
                                     animData = animIt->second;
                                 }

@@ -106,7 +106,7 @@ void X3DImporter::readInline(XmlNode &node) {
             }
             // Attribute "url" can contain list of strings. But we need only one - first.
             std::string::size_type slashPos = full_path.find_last_of("\\/");
-            mpIOHandler->PushDirectory(slashPos == std::string::npos ? std::string() : full_path.substr(0, slashPos + 1));
+            mpIOHandler->PushDirectory(slashPos == std::string::npos ? "" : full_path.substr(0, slashPos + 1).c_str());
             ParseFile(full_path, mpIOHandler);
             mpIOHandler->PopDirectory();
         }
