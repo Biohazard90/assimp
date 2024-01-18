@@ -3224,7 +3224,6 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
     aiVector3D defTranslate = PropertyGet(props, "Lcl Translation", aiVector3D(0.f, 0.f, 0.f));
     aiVector3D defRotation = PropertyGet(props, "Lcl Rotation", aiVector3D(0.f, 0.f, 0.f));
     aiVector3D defScale = PropertyGet(props, "Lcl Scaling", aiVector3D(1.f, 1.f, 1.f));
-    aiQuaternion defQuat = EulerToQuaternion(defRotation, rotOrder);
 
     aiVectorKey* outTranslations = new aiVectorKey[keyCount];
     aiQuatKey* outRotations = new aiQuatKey[keyCount];
@@ -3242,6 +3241,7 @@ aiNodeAnim* FBXConverter::GenerateSimpleNodeAnim(const std::string& name,
     if (keyframeLists[TransformationComp_Rotation].size() > 0) {
         InterpolateKeys(outRotations, keytimes, keyframeLists[TransformationComp_Rotation], defRotation, maxTime, minTime, rotOrder);
     } else {
+        aiQuaternion defQuat = EulerToQuaternion(defRotation, rotOrder);
         for (size_t i = 0; i < keyCount; ++i) {
             outRotations[i].mTime = CONVERT_FBX_TIME(keytimes[i]) * anim_fps;
             outRotations[i].mValue = defQuat;
